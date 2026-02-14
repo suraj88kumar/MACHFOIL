@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Airfoil Generator · Airfoil Tools — Enhanced</title>
+
+  <!-- Tailwind for layout/utility (same as home) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Your custom styles (plane, gradients, chips, etc.) -->
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Minor page-specific tweaks */
+    .field > label { font-weight: 600; color: #0f172a; }
+    .field > small { color: #64748b; display:block; }
+    .panel { background:#fff; border:1px solid rgba(59,130,246,.2); border-radius:16px; }
+    .kbd { padding:2px 6px; border:1px solid #CBD5E1; border-radius:4px; font-size:12px; background:#F8FAFC; }
+    /* SVG helpers */
+    #foil_svg .grid { stroke:#c3cce1; stroke-width:0.002; }
+    #foil_svg .airfoil-path { stroke:#0d47a1; stroke-width:0.0025; fill:rgba(30,136,229,.15); }
+  </style>
+</head>
+<body class="h-full">
+  <div class="h-full w-full overflow-auto gradient-bg">
+
+    <!-- Optional: flying A320 for visual cohesion -->
+    <div class="plane-wrap" aria-hidden="true">
+      <img src="assets/a320.png" class="flying-plane" alt="">
+    </div>
+
+    <!-- Sticky Nav -->
+    <nav class="w-full bg-white/90 border-b border-blue-100 backdrop-blur sticky top-0 z-20">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-6 text-sm sm:text-base">
+          <a href="index.html" class="text-slate-700 hover:text-blue-700">HOME</a>
+          <a href="airfoil.html" class="text-blue-700 font-semibold">AIRFOIL GENERATOR</a>
+          <a href="reynolds.html" class="text-slate-700 hover:text-blue-700">REYNOLDS NUMBER</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="max-w-7xl mx-auto px-6 py-8 relative z-10">
+      <header class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Airfoil Generator</h1>
+        <p class="text-slate-600">Generate NACA -4, -5, -6 airfoils<span class="mono-font"></span></p>
+      </header>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Left: Controls -->
+        <section class="panel p-5">
+          <!-- Tabs (simple) -->
+          <div class="flex gap-2 mb-4">
+            
+            <button id="tab4" class="suggestion-chip" aria-controls="sec4" aria-selected="true">NACA 4‑Digit</button>
+            <button id="tab5" class="suggestion-chip" aria-controls="sec5">NACA 5‑Digit</button>
+            <button id="tab6" class="suggestion-chip" aria-controls="sec6">NACA 6‑Series</button>
+          </div>
+
+          <!-- NACA 4 -->
+          <form id="sec4" class="space-y-4" role="region" aria-label="NACA 4-Digit">
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="field">
+                <label for="n4_m">m (max camber)</label>
+                <input id="n4_m" type="number" step="0.005" value="0.02" min="0" max="0.09"
+                       class="w-full border rounded-md px-3 py-2" aria-describedby="n4_m_h">
+                <small id="n4_m_h"></small>
+              </div>
+              <div class="field">
+                <label for="n4_p">p (camber position)</label>
+                <input id="n4_p" type="number" step="0.05" value="0.40" min="0" max="0.9"
+                       class="w-full border rounded-md px-3 py-2" aria-describedby="n4_p_h">
+                <small id="n4_p_h"></small>
+              </div>
+              <div class="field">
+                <label for="n4_t">t (thickness)</label>
+                <input id="n4_t" type="number" step="0.01" value="0.12" min="0.01" max="0.40"
+                       class="w-full border rounded-md px-3 py-2" aria-describedby="n4_t_h">
+                <small id="n4_t_h"></small>
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="field">
+                <label for="n4_n">number of points</label>
+                <input id="n4_n" type="number" step="10" value="200" min="81" max="2001"
+                       class="w-full border rounded-md px-3 py-2">
+                <small>Cosine spacing for LE resolution.</small>
+              </div>
+              <div class="field">
+                <label class="inline-flex items-center gap-2">
+                  <input id="n4_te" type="checkbox" class="accent-blue-600" checked>
+                  Closed trailing edge
+                </label>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btn_naca4" class="px-4 py-2 bg-blue-600 text-white rounded-md">Generate</button>
+            </div>
+          </form>
+
+          <!-- NACA 5 -->
+          <form id="sec5" class="space-y-4 hidden" role="region" aria-label="NACA 5-Digit">
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="field">
+                <label for="n5_p">p (max camber position)</label>
+                <select id="n5_p" class="w-full border rounded-md px-3 py-2">
+                  <option value="0.05">0.05</option>
+                  <option value="0.10">0.10</option>
+                  <option value="0.15" selected>0.15</option>
+                  <option value="0.20">0.20</option>
+                  <option value="0.25">0.25</option>
+                </select>
+                <small>Standard mean line (design <span class="mono-font">Cl<sub>i</sub>=0.3</span>).</small>
+              </div>
+              <div class="field">
+                <label for="n5_t">t (thickness)</label>
+                <input id="n5_t" type="number" step="0.01" value="0.12" min="0.01" max="0.40"
+                       class="w-full border rounded-md px-3 py-2">
+              </div>
+              <div class="field">
+                <label for="n5_n">points</label>
+                <input id="n5_n" type="number" step="10" value="200" min="81" max="2001"
+                       class="w-full border rounded-md px-3 py-2">
+              </div>
+            </div>
+            <div class="field">
+              <label class="inline-flex items-center gap-2">
+                <input id="n5_te" type="checkbox" class="accent-blue-600" checked>
+                Closed trailing edge
+              </label>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btn_naca5" class="px-4 py-2 bg-blue-600 text-white rounded-md">Generate</button>
+            </div>
+          </form>
+
+          <!-- NACA 6 -->
+          <form id="sec6" class="space-y-4 hidden" role="region" aria-label="NACA 6-Series">
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="field">
+                <label for="n6_family">family</label>
+                <select id="n6_family" class="w-full border rounded-md px-3 py-2">
+                  <option>63</option><option>63A</option>
+                  <option>64</option><option>64A</option>
+                  <option>65</option><option>65A</option>
+                  <option>66</option><option>67</option>
+                </select>
+                <small>Symmetric thickness; data‑driven base.</small>
+              </div>
+              <div class="field">
+                <label for="n6_t">t (thickness)</label>
+                <input id="n6_t" type="number" step="0.01" value="0.10" min="0.04" max="0.30"
+                       class="w-full border rounded-md px-3 py-2">
+              </div>
+              <div class="field">
+                <label for="n6_n">points</label>
+                <input id="n6_n" type="number" value="200" class="w-full border rounded-md px-3 py-2" disabled>
+                <small>Uses stored base coordinates.</small>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btn_naca6" class="px-4 py-2 bg-blue-600 text-white rounded-md">Generate</button>
+            </div>
+            <p class="text-sm text-slate-500">
+              Add base coordinates (e.g., “63A010”) in <code>backend/services/naca6_data.py</code>. We scale <span class="mono-font">t/c</span>.
+            </p>
+          </form>
+
+          <hr class="my-4">
+          <div class="flex gap-2">
+            <button id="btn_download" class="px-4 py-2 bg-slate-800 text-white rounded-md">Download .dat</button>
+            <button id="btn_clear" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md">Clear</button>
+          </div>
+        </section>
+
+        <!-- Right: Canvas -->
+        <section class="panel p-5">
+          <h2 class="text-lg font-semibold text-slate-800 mb-2">Preview</h2>
+          <svg id="foil_svg" width="100%" height="360" viewBox="-0.05 -0.6 1.1 1.2" role="img" aria-label="Airfoil Preview">
+            <!-- Grid -->
+            <g id="grid">
+              <!-- verticals -->
+              <line class="grid" x1="0" y1="-0.5" x2="0" y2="0.5"/>
+              <line class="grid" x1="0.25" y1="-0.5" x2="0.25" y2="0.5"/>
+              <line class="grid" x1="0.5" y1="-0.5" x2="0.5" y2="0.5"/>
+              <line class="grid" x1="0.75" y1="-0.5" x2="0.75" y2="0.5"/>
+              <line class="grid" x1="1" y1="-0.5" x2="1" y2="0.5"/>
+              <!-- horizontals -->
+              <line class="grid" x1="-0.05" y1="0" x2="1.05" y2="0"/>
+            </g>
+            <!-- path injected by JS -->
+          </svg>
+          <p class="text-xs text-slate-500 mt-2">ViewBox normalized to chord [0..1]. Positive y upward in math space (rendered inverted for SVG).</p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- App JS -->
+  <script src="js/util.js"></script>
+  <script src="js/airfoil.js"></script>
+  <script>
+    // Tab switcher + keyboard shortcuts
+    const sections = { tab4: 'sec4', tab5: 'sec5', tab6: 'sec6' };
+    Object.keys(sections).forEach(tid=>{
+      document.getElementById(tid).addEventListener('click', ()=>{
+        Object.keys(sections).forEach(k=>{
+          document.getElementById(k).classList.remove('suggestion-chip--active');
+          document.getElementById(sections[k]).classList.add('hidden');
+        });
+        document.getElementById(tid).classList.add('suggestion-chip--active');
+        document.getElementById(sections[tid]).classList.remove('hidden');
+      });
+    });
+    // Keyboard: G=generate current tab, D=download
+    document.addEventListener('keydown', (e)=>{
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key.toLowerCase() === 'g') {
+        if (!document.getElementById('sec4').classList.contains('hidden')) document.getElementById('btn_naca4').click();
+        else if (!document.getElementById('sec5').classList.contains('hidden')) document.getElementById('btn_naca5').click();
+        else document.getElementById('btn_naca6').click();
+      } else if (e.key.toLowerCase() === 'd') {
+        document.getElementById('btn_download').click();
+      }
+    });
+    // Clear preview
+    document.getElementById('btn_clear').onclick = ()=>{
+      const svg = document.getElementById('foil_svg');
+      [...svg.querySelectorAll('path.airfoil-path')].forEach(p=>p.remove());
+      document.getElementById('status').textContent = 'Cleared.';
+    };
+  </script>
+  </body>
+</html>

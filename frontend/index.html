@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Airfoil Tools — Enhanced</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
+  <style>@view-transition { navigation: auto; }</style>
+</head>
+
+<body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto gradient-bg">
+
+    <!-- Flying A320 -->
+    <div class="plane-wrap" aria-hidden="true">
+      <img src="./assets/a320.png" class="flying-plane" alt="" />
+    </div>
+
+    <!-- Header / Masthead -->
+    <header id="header" class="header-gradient">
+      <div class="w-full px-2 sm:px-3 pt-2 pb-5">
+        <div class="header-row relative z-10">
+
+          <!-- Center -->
+          <div class="header-center text-center">
+            <div class="relative mb-4 inline-block">
+              <img src="./assets/logo.png" alt="Airfoil Generator Portal" class="center-logo mx-auto block" />
+            </div>
+            <p id="portal-subtitle" class="text-lg text-slate-600">
+              MACHTOOLs PORTAL
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Navigation -->
+    <nav class="w-full bg-white/90 border-b border-blue-100 backdrop-blur sticky top-0 z-20">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-6 text-sm sm:text-base">
+          <a href="index.html" class="text-blue-700 font-semibold">HOME</a>
+          <a href="airfoil.html" class="text-slate-700 hover:text-blue-700 transition">AIRFOIL GENERATOR</a>
+          <a href="reynolds.html" class="text-slate-700 hover:text-blue-700 transition">REYNOLDS NUMBER</a>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-slate-500 text-sm">
+          <span class="mono-font">v0.2.0</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="max-w-7xl mx-auto px-6 py-8 relative z-10">
+
+      <!-- Hero -->
+      <section class="rounded-2xl border border-blue-200 bg-white/80 backdrop-blur-xl p-6 md:p-8 mb-10 search-glow">
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+              Design. Generate. Analyze.
+            </h1>
+            <p class="text-slate-600 text-lg">
+              Generate NACA 4/5/6 airfoils, visualize geometry, export <span class="mono-font">.dat</span>,
+              and compute chord-based Reynolds numbers — all in one lightweight web app.
+            </p>
+
+          </div>
+
+          <!-- Action panel -->
+          <div class="rounded-xl p-5 bg-white border border-blue-200">
+            <h3 class="text-lg font-semibold text-slate-800 mb-3">Get Started</h3>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <a href="airfoil.html"
+                 class="inline-flex items-center justify-center px-4 py-3 rounded-lg bg-blue-600 text-white hover:opacity-90 transition">
+                Open Airfoil Generator →
+              </a>
+              <a href="reynolds.html"
+                 class="inline-flex items-center justify-center px-4 py-3 rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition">
+                Compute Reynolds →
+              </a>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">
+              Tip: You can export geometry as <code>.dat</code> and reuse in XFOIL/CFD tools.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feature Cards -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="stat-card rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-slate-800 mb-2">NACA 4‑Digit</h3>
+          <p class="text-slate-600 mb-4">Parametric generator with closed trailing edge option, cosine spacing, SVG preview, and .dat export.</p>
+          <a href="airfoil.html" class="text-blue-700 font-semibold">Generate →</a>
+        </div>
+
+        <div class="stat-card rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-slate-800 mb-2">NACA 5‑Digit</h3>
+          <p class="text-slate-600 mb-4">Standard mean line (design <span class="mono-font">Cl<sub>i</sub>=0.3</span>) positions 0.05…0.25; reflex variant ready to add later.</p>
+          <a href="airfoil.html" class="text-blue-700 font-semibold">Try it →</a>
+        </div>
+
+        <div class="stat-card rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-slate-800 mb-2">NACA 6‑Series</h3>
+          <p class="text-slate-600 mb-4">Data‑driven thickness forms: paste base 6‑series coordinates once, scale to target <span class="mono-font">t/c</span> instantly.</p>
+          <a href="airfoil.html" class="text-blue-700 font-semibold">Load section →</a>
+        </div>
+      </section>
+
+      <!-- FYI / Notes -->
+      <section class="rounded-xl p-6 border border-blue-200 bg-white/70">
+        <h3 class="text-lg font-semibold text-slate-800 mb-2">Notes</h3>
+        <ul class="list-disc pl-6 text-slate-600 space-y-1">
+          <li>Use <strong>Airfoil Generator</strong> for geometry & exports.</li>
+          <li>Use <strong>Reynolds Calculator</strong> for chord‑based <span class="mono-font">Re = ρVc/μ = Vc/ν</span>.</li>
+          <li>All pages are pure <strong>HTML/JS</strong> with a <strong>Python FastAPI</strong> backend (localhost).</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full">
+      <div class="max-w-7xl mx-auto px-6 py-6">
+        <p class="text-center text-sm text-slate-500">
+          Built by HUMANS
+        </p>
+      </div>
+    </footer>
+
+  </div>
+  
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="./js/util.js"></script>
+<script src="./js/airfoil.js"></script>
+
+</body>
+</html>
