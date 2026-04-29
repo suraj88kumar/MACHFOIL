@@ -18,6 +18,19 @@
     /* SVG helpers */
     #foil_svg .grid { stroke:#c3cce1; stroke-width:0.002; }
     #foil_svg .airfoil-path { stroke:#0d47a1; stroke-width:0.0025; fill:rgba(30,136,229,.15); }
+    
+    /* Status message styling */
+    .status-message {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    .status-info { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
+    .status-success { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+    .status-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .status-hidden { display: none; }
   </style>
 </head>
 <body class="h-full">
@@ -45,6 +58,9 @@
         <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Airfoil Generator</h1>
         <p class="text-slate-600">Generate NACA -4, -5, -6 airfoils<span class="mono-font"></span></p>
       </header>
+
+      <!-- Status Message Display -->
+      <div id="status" class="status-message status-info status-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <div class="grid lg:grid-cols-2 gap-6">
         <!-- Left: Controls -->
@@ -162,7 +178,7 @@
               <button type="button" id="btn_naca6" class="px-4 py-2 bg-blue-600 text-white rounded-md">Generate</button>
             </div>
             <p class="text-sm text-slate-500">
-              Add base coordinates (e.g., “63A010”) in <code>backend/services/naca6_data.py</code>. We scale <span class="mono-font">t/c</span>.
+              Add base coordinates (e.g., "63A010") in <code>backend/services/naca6_data.py</code>. We scale <span class="mono-font">t/c</span>.
             </p>
           </form>
 
@@ -229,7 +245,7 @@
     document.getElementById('btn_clear').onclick = ()=>{
       const svg = document.getElementById('foil_svg');
       [...svg.querySelectorAll('path.airfoil-path')].forEach(p=>p.remove());
-      document.getElementById('status').textContent = 'Cleared.';
+      window.setStatus('Cleared.', 'info');
     };
   </script>
   </body>
