@@ -15,6 +15,32 @@
     .panel { background:#fff; border:1px solid rgba(59,130,246,.2); border-radius:16px; }
     .preset { cursor:pointer; }
     .kbd { padding:2px 6px; border:1px solid #CBD5E1; border-radius:4px; font-size:12px; background:#F8FAFC; }
+    
+    /* Status message styling */
+    .status-message {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    .status-info { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
+    .status-success { background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC; }
+    .status-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .status-hidden { display: none; }
+    
+    /* Regime badge */
+    .regime-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+    .regime-laminar { background: #E0E7FF; color: #4338CA; }
+    .regime-transitional { background: #FEF3C7; color: #B45309; }
+    .regime-turbulent { background: #FEE2E2; color: #991B1B; }
   </style>
 </head>
 <body class="h-full">
@@ -42,6 +68,9 @@
         <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Reynolds Number</h1>
         <p class="text-slate-600">Compute Reynolds number: <span class="mono-font">Re = inertial forces / viscous forces</span></p>
       </header>
+
+      <!-- Status Message Display -->
+      <div id="status" class="status-message status-info status-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <section class="panel p-5 space-y-5">
         <div class="grid md:grid-cols-2 gap-6">
@@ -74,15 +103,15 @@
                   <label for="re_nu">ν [m²/s]</label>
                   <input id="re_nu" type="number" step="1e-7" value="1.511e-5" min="1e-7"
                          class="w-full border rounded-md px-3 py-2">
-                  <small>Air @ 20 °C ≈ 1.511×10⁻⁵ m²/s</small>
+                  <small>Air @ 20 °C ≈ 1.511×10⁻⁵ m²/s</small>
                 </div>
                 <div class="field">
                   <label>Presets (air)</label>
                   <div class="flex flex-wrap gap-2 text-sm">
-                    <span class="suggestion-chip preset" data-nu="1.2462e-5">−10 °C</span>
-                    <span class="suggestion-chip preset" data-nu="1.3324e-5">0 °C</span>
-                    <span class="suggestion-chip preset" data-nu="1.4207e-5">10 °C</span>
-                    <span class="suggestion-chip preset" data-nu="1.5111e-5">20 °C</span>
+                    <span class="suggestion-chip preset" data-nu="1.2462e-5">−10 °C</span>
+                    <span class="suggestion-chip preset" data-nu="1.3324e-5">0 °C</span>
+                    <span class="suggestion-chip preset" data-nu="1.4207e-5">10 °C</span>
+                    <span class="suggestion-chip preset" data-nu="1.5111e-5">20 °C</span>
                   </div>
                 </div>
               </div>
@@ -115,10 +144,9 @@
           <!-- Output -->
           <div class="panel p-5">
             <h2 class="text-lg font-semibold text-slate-800 mb-2">Result</h2>
-            <div class="text-3xl md:text-4xl font-bold text-slate-900" id="re_out">Re = </div>
-
-
-            <p class="text-slate-600 mt-2 text-sm">Dimensionless. High Re → inertial forces dominate;
+            <div class="text-3xl md:text-4xl font-bold text-slate-900 mono-font" id="re_out">Re = —</div>
+            <div id="re_regime" class="mt-2"></div>
+            <p class="text-slate-600 mt-4 text-sm">Dimensionless. High Re → inertial forces dominate;
                low Re → viscous effects dominate.</p>
           </div>
         </div>
@@ -127,35 +155,8 @@
   </div>
 
   <!-- Dependencies -->
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="./js/util.js"></script>
-<script src="./js/airfoil.js"></script>
-
-  <script>
-    // Mode toggle + presets + Enter key
-    const modeRadios = document.querySelectorAll('input[name="mode"]');
-    const nuBlock = document.getElementById('nu_block');
-    const rhomuBlock = document.getElementById('rhomu_block');
-    modeRadios.forEach(r=>{
-      r.addEventListener('change', ()=>{
-        const useNu = r.value==='nu' && r.checked;
-        nuBlock.style.display = useNu ? '' : 'none';
-        rhomuBlock.style.display = useNu ? 'none' : '';
-      });
-    });
-    // Presets
-    document.querySelectorAll('.preset').forEach(el=>{
-      el.addEventListener('click', ()=>{ document.getElementById('re_nu').value = el.dataset.nu; });
-    });
-    // Enter to compute
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn_re').click(); }
-    });
-    // Clear
-    document.getElementById('btn_clear_re').onclick = ()=>{
-      document.getElementById('re_out').textContent = 'Re = —';
-    };
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./js/util.js"></script>
+  <script src="./js/reynolds.js"></script>
 </body>
 </html>

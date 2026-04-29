@@ -41,4 +41,27 @@ function drawAirfoil(points, svg) {
   }
 }
 
+/**
+ * Set status message with styling
+ * @param {string} msg - Message text
+ * @param {string} className - 'info', 'success', 'error', or '' to hide
+ */
+function setStatus(msg, className = 'info') {
+  const statusEl = document.getElementById('status');
+  if (!statusEl) return;
+  
+  if (!msg || msg === '') {
+    statusEl.classList.add('status-hidden');
+    return;
+  }
+  
+  statusEl.textContent = msg;
+  statusEl.classList.remove('status-hidden', 'status-info', 'status-success', 'status-error');
+  if (className) {
+    statusEl.classList.add(`status-${className}`);
+  }
+  console.log(`[${className.toUpperCase()}]`, msg);
+}
+
 window.drawAirfoil = drawAirfoil; // export to global for airfoil.js
+window.setStatus = setStatus;     // export to global for airfoil.js & reynolds.js
